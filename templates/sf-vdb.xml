@@ -1,0 +1,1 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?><vdb name='SFVdb' version='1.0.0'><model name='SFSourceModel'><source connection-jndi-name='java:/sfDS41' name='SFSourceModel' translator-name='salesforce-41'/></model></vdb>

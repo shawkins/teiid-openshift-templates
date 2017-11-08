@@ -1,0 +1,40 @@
+{
+    "apiVersion": "v1",
+    "kind": "ImageStream",
+    "metadata": {
+        "annotations": {
+            "openshift.io/display-name": "Teiid"
+        },
+        "name": "teiid"
+    },
+    "spec": {
+        "tags": [
+            {
+                "annotations": {
+                    "description": "Teiid (Latest), a high performance data virtualization solution.\n\nWARNING: By selecting this tag, your application will automatically update to use the latest version of Teiid available on OpenShift, including major versions updates.",
+                    "iconClass": "icon-teiid",
+                    "openshift.io/display-name": "Teiid (Latest)",
+                    "tags": "java,database,jboss"
+                },
+                "from": {
+                    "kind": "ImageStreamTag",
+                    "name": "10.0"
+                },
+                "name": "latest"
+            },
+            {
+                "annotations": {
+                    "description": "Teiid 10.0, a high performance data virtualization solution",
+                    "iconClass": "icon-teiid",
+                    "openshift.io/display-name": "Teiid 10",
+                    "tags": "java,database,jboss"
+                },
+                "from": {
+                    "kind": "DockerImage",
+                    "name": "teiid:10.0.0.Final"
+                },
+                "name": "10.0"
+            }
+        ]
+    }
+}
