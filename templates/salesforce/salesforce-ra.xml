@@ -1,0 +1,20 @@
+                <resource-adapter id='sfDS41'>
+                    <module slot='main' id='org.jboss.teiid.resource-adapter.salesforce-41'/>
+                    <transaction-support>NoTransaction</transaction-support>
+                    <connection-definitions>
+                        <connection-definition class-name='org.teiid.resource.adapter.salesforce.SalesForceManagedConnectionFactory' jndi-name='java:/sfDS41' enabled='true' pool-name='sfDS41'>
+                            <config-property name='URL'>
+                                https://www.salesforce.com/services/Soap/u/40.0
+                            </config-property>
+                            <config-property name='password'>
+                                ${env.SF_PASS}
+                            </config-property>
+                            <config-property name='username'>
+                                ${env.SF_USER}
+                            </config-property>
+                            <pool>
+                                <max-pool-size>20</max-pool-size>
+                            </pool>    
+                        </connection-definition>
+                    </connection-definitions>
+                </resource-adapter>

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<vdb name='vdb' version='1.0.0'>
+    <model name='mongodb'>
+        <source connection-jndi-name='java:/mongodbDS' name='mongodb' translator-name='mongodb'/>
+    </model>
+</vdb>

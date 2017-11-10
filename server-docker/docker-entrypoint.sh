@@ -299,7 +299,7 @@ checkIfUserExistsForDomainMode
 addAppUser
 addMgmtUser
 
-# copy injected deployments
+# copy injected deployments - only works for standalone
 if [ -d "$SERVER/deployments" ]
 then 
   cp $SERVER/deployments/* $SERVER/standalone/deployments

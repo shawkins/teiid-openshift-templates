@@ -1,0 +1,19 @@
+        <resource-adapter id='mongodbDS'>
+            <module slot='main' id='org.jboss.teiid.resource-adapter.mongodb'/>
+            <transaction-support>NoTransaction</transaction-support>
+            <connection-definitions>
+                <connection-definition class-name='org.teiid.resource.adapter.mongodb.MongoDBManagedConnectionFactory' 
+                        jndi-name='java:/mongodbDS' 
+                        enabled='true' 
+                        use-java-context='true' 
+                        pool-name='mongodbDS'>                        
+                      <config-property name='RemoteServerList'>${env.uri}</config-property>
+                      <config-property name='Database'>${env.MONGODB_DATABASE}</config-property>
+                      <config-property name='Username'>${env.username}</config-property>
+                      <config-property name='Password'>${env.password}</config-property>
+                       <pool>
+                           <max-pool-size>20</max-pool-size>
+                       </pool>
+                </connection-definition>
+            </connection-definitions>
+        </resource-adapter>

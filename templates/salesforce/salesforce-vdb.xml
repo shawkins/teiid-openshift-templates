@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<vdb name='vdb' version='1.0.0'>
+    <model name='salesforce'>
+        <source connection-jndi-name='java:/sfDS41' name='salesforce' translator-name='salesforce-41'/>
+    </model>
+</vdb>
