@@ -323,7 +323,8 @@ then
 
   CPU_LIMIT="$(core_limit)"
   if [ "x$CPU_LIMIT" != x ]; then
-      JAVA_OPTS="$JAVA_OPTS -XX:ParallelGCThreads=$CPU_LIMIT -XX:ConcGCThreads=$CPU_LIMIT -Djava.util.concurrent.ForkJoinPool.common.parallelism=$CPU_LIMIT"         
+      DOUBLE_LIMIT=$((${CPU_LIMIT}*2))
+      JAVA_OPTS="$JAVA_OPTS -XX:ParallelGCThreads=$CPU_LIMIT -XX:ConcGCThreads=$CPU_LIMIT -Djava.util.concurrent.ForkJoinPool.common.parallelism=$CPU_LIMIT -Dio.netty.eventLoopThreads=$DOUBLE_LIMIT"         
       export JAVA_OPTS
   fi
 fi

@@ -243,8 +243,7 @@
             "containers": [
               {
                 "args": [
-                  "custom/standalone-teiid.xml",
-                  "-Djboss.default.jgroups.stack=kubernetes"
+                  "custom/standalone-teiid.xml"
                 ],
                 "env": [
                   {
@@ -303,6 +302,18 @@
                   "timeoutSeconds": 80,
                   "periodSeconds": 60,
                   "successThreshold": 1,
+                  "failureThreshold": 5
+                },
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "/usr/local/bin/is_healthy.sh", "vdb", "1.0.0"
+                    ]
+                  },
+                  "initialDelaySeconds": 10,
+                  "timeoutSeconds": 80,
+                  "periodSeconds": 60,
+                  "successThreshold": 2,
                   "failureThreshold": 5
                 },
                 "name": "${APPLICATION_NAME}",
