@@ -2,16 +2,16 @@
   "apiVersion": "v1",
   "kind": "Template",
   "labels": {
-    "template": "teiid-mongodb"
+    "template": "teiid-mongodb-template"
   },
   "metadata": {
     "annotations": {
-      "description": "Teiid 10 MongoDB as a Database",
+      "description": "Teiid virtualization of MongoDB",
       "iconClass": "icon-teiid",
       "tags": "java,database,jboss",
       "openshift.io/display-name": "Teiid MongoDB",
       "openshift.io/documentation-url": "http://teiid.jboss.org/docs/",
-      "openshift.io/long-description": "This template provides a standalone Teiid server (a high performance, scalable, virtualization solution) providing access to MongoDB as a standard database.",
+      "openshift.io/long-description": "This template provides a standalone Teiid server (a high performance, scalable, virtualization solution) providing access to MongoDB.",
       "openshift.io/provider-display-name": "Red Hat, Inc.",
       "openshift.io/support-url": "http://teiid.jboss.org/"
     },
@@ -51,15 +51,17 @@
       "metadata": {
         "name": "${APPLICATION_NAME}",
         "annotations": {
-          "template.openshift.io/expose-teiid.client.db.auth_username": "{.data['application-user']}",
-          "template.openshift.io/expose-teiid.client.db.auth_password": "{.data['application-password']}"
+          "template.openshift.io/expose-username": "{.data['application-user']}",
+          "template.openshift.io/expose-password": "{.data['application-password']}",
+          "template.openshift.io/expose-database_name": "{.data['database-name']}"
         }
       },
       "stringData" : {
         "application-user": "${APPLICATION_USER}",
         "application-password": "${APPLICATION_PASSWORD}",
         "management-user": "${MANAGEMENT_USER}",
-        "management-password": "${MANAGEMENT_PASSWORD}"
+        "management-password": "${MANAGEMENT_PASSWORD}",
+        "database_name": "${DATABASE_NAME}"
       }
     },
     {
@@ -67,7 +69,7 @@
       "kind": "Service",
       "metadata": {
         "annotations": {
-          "description": "The web server's HTTP port."
+          "template.openshift.io/expose-odata_url": "http://{.spec.clusterIP}:{.spec.ports[0].port}/odata4"
         },
         "labels": {
           "application": "${APPLICATION_NAME}"
@@ -77,6 +79,7 @@
       "spec": {
         "ports": [
           {
+            "name": "odata",
             "port": 8080,
             "targetPort": 8080
           }
@@ -91,17 +94,17 @@
       "kind": "Service",
       "metadata": {
         "annotations": {
-          "description": "JDBC port.",
-          "template.openshift.io/expose-teiid.client.mm.url": "{.spec.clusterIP}:{.spec.ports[0].port}"
+          "template.openshift.io/expose-mm_uri": "{.spec.clusterIP}:{.spec.ports[0].port}"
         },
         "labels": {
           "application": "${APPLICATION_NAME}"
         },
-        "name": "${APPLICATION_NAME}-mm-jdbc"
+        "name": "${APPLICATION_NAME}-mm"
       },
       "spec": {
         "ports": [
           {
+            "name": "mm",
             "port": 31000,
             "targetPort": 31000
           }
@@ -116,8 +119,7 @@
       "kind": "Service",
       "metadata": {
         "annotations": {
-          "description": "PG port.",
-          "template.openshift.io/expose-teiid.client.pg.url": "{.spec.clusterIP}:{.spec.ports[0].port}"
+          "template.openshift.io/expose-pg_uri": "{.spec.clusterIP}:{.spec.ports[0].port}"
         },
         "labels": {
           "application": "${APPLICATION_NAME}"
@@ -127,6 +129,7 @@
       "spec": {
         "ports": [
           {
+            "name": "pg",
             "port": 35432,
             "targetPort": 35432
           }
@@ -151,6 +154,7 @@
       "spec": {
         "ports": [
           {
+            "name": "wildfly-management",
             "port": 9990,
             "targetPort": 9990
           }
@@ -183,41 +187,23 @@
         }
       },
       "data": {
-        "standalone-teiid.xml":"${config-xml}",
-        "application-roles.properties":"${APPLICATION_USER}=odata"
-      }
-    },
-    {
-      "apiVersion": "v1",
-      "id": "${APPLICATION_NAME}-management",
-      "kind": "Route",
-      "metadata": {
-        "annotations": {
-          "description": "Route for the management console."
-        },
-        "labels": {
-          "application": "${APPLICATION_NAME}"
-        },
-        "name": "${APPLICATION_NAME}-management"
-      },
-      "spec": {
-        "to": {
-          "kind": "Service",
-          "name": "${APPLICATION_NAME}-management"
-        }
+        "standalone-teiid.xml":"${config-xml}"
       }
     },
     {
       "apiVersion": "v1",
       "kind": "DeploymentConfig",
       "metadata": {
+        "annotations": {
+          "template.alpha.openshift.io/wait-for-ready": "true"
+        },
         "labels": {
           "application": "${APPLICATION_NAME}"
         },
         "name": "${APPLICATION_NAME}"
       },
       "spec": {
-        "replicas": "${{NUMBER_OF_INSTANCES}}",
+        "replicas": "1",
         "selector": {
           "deploymentConfig": "${APPLICATION_NAME}"
         },
@@ -247,55 +233,51 @@
                 ],
                 "env": [
                   {
-                    "name": "OPENSHIFT_KUBE_PING_LABELS",
-                    "value": "application=${APPLICATION_NAME}"
-                  },
-                  {
-                    "name": "OPENSHIFT_KUBE_PING_NAMESPACE",
-                    "valueFrom": {
-                      "fieldRef": {
-                        "fieldPath": "metadata.namespace"
-                      }
-                    }
-                  },
-                  {
-                    "name": "KUBERNETES_LABELS",
-                    "value": "application=${APPLICATION_NAME}"
-                  },
-                  {
-                    "name": "KUBERNETES_NAMESPACE",
-                    "valueFrom": {
-                      "fieldRef": {
-                        "fieldPath": "metadata.namespace"
-                      }
-                    }
-                  },
-                  {
                     "name": "MGMT_USER",
-                    "value": "${MANAGEMENT_USER}"
+                    "valueFrom": {
+                        "secretKeyRef": {
+                            "key": "management-user",
+                            "name": "${APPLICATION_NAME}"
+                        }
+                    }
                   },
                   {
                     "name": "MGMT_PASS",
-                    "value": "${MANAGEMENT_PASSWORD}"
+                    "valueFrom": {
+                        "secretKeyRef": {
+                            "key": "management-password",
+                            "name": "${APPLICATION_NAME}"
+                        }
+                    }
                   },
                   {
                     "name": "APP_USER",
-                    "value": "${APPLICATION_USER}"
+                    "valueFrom": {
+                        "secretKeyRef": {
+                            "key": "application-user",
+                            "name": "${APPLICATION_NAME}"
+                        }
+                    }
+                  },
+                  {
+                  	"name": "APP_ROLES",
+                  	"value": "odata"
                   },
                   {
                     "name": "APP_PASS",
-                    "value": "${APPLICATION_PASSWORD}"
-                  },
-                  {
-                    "name": "MONGODB_DATABASE",
-                    "value": "${MONGODB_DATABASE}"
+                    "valueFrom": {
+                        "secretKeyRef": {
+                            "key": "application-password",
+                            "name": "${APPLICATION_NAME}"
+                        }
+                    }
                   }
                 ],
-                "image": "${IMAGE}",
+                "image": "teiid-server:${IMAGE_VERSION}",
                 "livenessProbe": {
                   "exec": {
                     "command": [
-                      "/usr/local/bin/is_running.sh"
+                      "/usr/local/bin/is_running.sh", "${DATABASE_NAME}", "1.0.0"
                     ]
                   },
                   "initialDelaySeconds": 10,
@@ -307,7 +289,7 @@
                 "readinessProbe": {
                   "exec": {
                     "command": [
-                      "/usr/local/bin/is_healthy.sh", "vdb", "1.0.0"
+                      "/usr/local/bin/is_healthy.sh", "${DATABASE_NAME}", "1.0.0"
                     ]
                   },
                   "initialDelaySeconds": 10,
@@ -315,6 +297,11 @@
                   "periodSeconds": 60,
                   "successThreshold": 2,
                   "failureThreshold": 5
+                },
+                "resources": {
+                  "limits": {
+                    "memory": "${MEMORY_LIMIT}"
+                  }
                 },
                 "name": "${APPLICATION_NAME}",
                 "ports": [
@@ -348,13 +335,7 @@
                     "name": "${APPLICATION_NAME}-configuration",
                     "mountPath": "/opt/jboss/teiid-server/standalone/configuration/custom"
                   }
-                ],
-                "resources": {
-                  "requests": {
-                    "cpu": "0.5",
-                    "memory": "512Mi"
-                  }
-                }
+                ]
               }
             ],
             "terminationGracePeriodSeconds": 120,
@@ -385,25 +366,35 @@
   ],
   "parameters": [
     {
-      "description": "Namespace for the application. Note: The namespace is required for creating proper RoleBindings. Specifying wrong namespace will prevent cluster from forming.",
-      "name": "NAMESPACE",
-      "required": true,
-      "value": "myproject"
+       "description": "Maximum amount of memory the container can use.",
+       "displayName": "Memory Limit",
+       "name": "MEMORY_LIMIT",
+       "required": true,
+       "value": "512Mi"
     },
     {
-      "description": "MongoDB Database Name",
-      "name": "MONGODB_DATABASE",
-      "required": true,
-      "value": "sampledb"
+      "description": "The OpenShift Namespace where the ImageStream resides.",
+      "displayName": "Namespace",
+      "name": "NAMESPACE",
+      "value": "openshift"
     },
     {
       "description": "The name for the application.",
+      "displayName": "Application Name",
       "name": "APPLICATION_NAME",
       "required": true,
-      "value": "teiid-mongodb"
+      "value": "teiid-salesforce"
+    },
+    {
+      "description": "The name of the Virtual Database",
+      "displayName": "Database Name",
+      "name": "DATABASE_NAME",
+      "required": true,
+      "value": "vdb"
     },
     {
       "description": "Username for accessing Teiid endpoints.",
+      "displayName": "Teiid Username",
       "name": "APPLICATION_USER",
       "required": true,
       "generate": "expression",
@@ -411,6 +402,7 @@
     },
     {
       "description": "Password for accessing Teiid endpoints.",
+      "displayName": "Teiid Password",
       "name": "APPLICATION_PASSWORD",
       "required": true,
       "generate": "expression",
@@ -418,6 +410,7 @@
     },
     {
       "description": "Username for accessing management console.",
+      "displayName": "Management User",
       "name": "MANAGEMENT_USER",
       "required": true,
       "generate": "expression",
@@ -425,22 +418,18 @@
     },
     {
       "description": "Password for accessing management console.",
+      "displayName": "Management Password",
       "name": "MANAGEMENT_PASSWORD",
       "required": true,
       "generate": "expression",
       "from": "[a-zA-Z0-9]{8}"
     },
     {
-      "description": "Teiid image.",
-      "name": "IMAGE",
+      "description": "Version of Teiid image to be used (10.0.0.Final, or latest)",
+      "displayName": "Teiid Image Version",
+      "name": "IMAGE_VERSION",
       "required": true,
-      "value": "teiid-server:10.0.0.Final"
-    },
-    {
-      "description": "Number of instances in the cluster.",
-      "name": "NUMBER_OF_INSTANCES",
-      "required": true,
-      "value": "1"
+      "value": "10.0.0.Final"
     }
   ]
 }

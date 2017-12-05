@@ -61,9 +61,9 @@
         "application-password": "${APPLICATION_PASSWORD}",
         "management-user": "${MANAGEMENT_USER}",
         "management-password": "${MANAGEMENT_PASSWORD}",
+        "database_name": "${DATABASE_NAME}",
         "salesforce-user": "${SALESFORCE_USER}",
-        "salesforce-password": "${SALESFORCE_PASSWORD}",
-        "database_name": "${DATABASE_NAME}"
+        "salesforce-password": "${SALESFORCE_PASSWORD}"
       }
     },
     {
@@ -189,8 +189,7 @@
         }
       },
       "data": {
-        "standalone-teiid.xml":"${config-xml}",
-        "application-roles.properties":"${APPLICATION_USER}=odata"
+        "standalone-teiid.xml":"${config-xml}"
       }
     },
     {
@@ -263,6 +262,10 @@
                     }
                   },
                   {
+                  	"name": "APP_ROLES",
+                  	"value": "odata"
+                  },
+                  {
                     "name": "APP_PASS",
                     "valueFrom": {
                         "secretKeyRef": {
@@ -294,7 +297,7 @@
                 "livenessProbe": {
                   "exec": {
                     "command": [
-                      "/usr/local/bin/is_running.sh"
+                      "/usr/local/bin/is_running.sh", "${DATABASE_NAME}", "1.0.0"
                     ]
                   },
                   "initialDelaySeconds": 10,
@@ -314,6 +317,11 @@
                   "periodSeconds": 60,
                   "successThreshold": 2,
                   "failureThreshold": 5
+                },
+                "resources": {
+                  "limits": {
+                    "memory": "${MEMORY_LIMIT}"
+                  }
                 },
                 "name": "${APPLICATION_NAME}",
                 "ports": [
@@ -347,13 +355,7 @@
                     "name": "${APPLICATION_NAME}-configuration",
                     "mountPath": "/opt/jboss/teiid-server/standalone/configuration/custom"
                   }
-                ],
-                "resources": {
-                  "requests": {
-                    "cpu": "0.5",
-                    "memory": "512Mi"
-                  }
-                }
+                ]
               }
             ],
             "terminationGracePeriodSeconds": 120,
@@ -383,6 +385,13 @@
     }
   ],
   "parameters": [
+    {
+       "description": "Maximum amount of memory the container can use.",
+       "displayName": "Memory Limit",
+       "name": "MEMORY_LIMIT",
+       "required": true,
+       "value": "512Mi"
+    },
     {
       "description": "The OpenShift Namespace where the ImageStream resides.",
       "displayName": "Namespace",

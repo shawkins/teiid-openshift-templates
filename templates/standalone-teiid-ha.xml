@@ -56,7 +56,7 @@
                     <properties path='application-users.properties' relative-to='jboss.server.config.dir'/>
                 </authentication>
                 <authorization>
-                    <properties path='custom/application-roles.properties' relative-to='jboss.server.config.dir'/>
+                    <properties path='application-roles.properties' relative-to='jboss.server.config.dir'/>
                 </authorization>
             </security-realm>
         </security-realms>
