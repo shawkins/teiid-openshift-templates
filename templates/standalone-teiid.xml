@@ -164,6 +164,12 @@
                         <driver-class>org.teiid.jdbc.TeiidDriver</driver-class>
                         <xa-datasource-class>org.teiid.jdbc.TeiidDataSource</xa-datasource-class>
                     </driver>
+                    <driver name='mysql' module='com.mysql.jdbc'>
+                        <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+                    </driver>
+                    <driver name='postgresql' module='org.postgresql.jdbc'>
+                        <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+                    </driver>
                 </drivers>
             </datasources>
         </subsystem>

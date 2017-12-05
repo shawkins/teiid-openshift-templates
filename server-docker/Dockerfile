@@ -35,7 +35,7 @@ RUN TEIID_SHA=$(curl $DISTRIBUTION_URL.sha1); curl -o /tmp/server.zip $DISTRIBUT
     && chmod -R g+rw $JBOSS_HOME \
     && find $JBOSS_HOME -type d -exec chmod g+x {} +
     
-USER 1000
+USER jboss
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin
@@ -44,7 +44,10 @@ COPY is_running.sh /usr/local/bin
 # S2I Scripts
 COPY .s2i /usr/local/s2i
 
+# dependencies
+COPY ./contrib/wfmodules/ $JBOSS_HOME/modules/
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-# Expose Teiid server  ports 
+# Expose Teiid server ports 
 EXPOSE 8080 9990 31000 35432
