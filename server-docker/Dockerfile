@@ -31,7 +31,7 @@ ENV HOME /opt/jboss/
 
 RUN TEIID_SHA=$(curl $DISTRIBUTION_URL.sha1); curl -o /tmp/server.zip $DISTRIBUTION_URL && sha1sum /tmp/server.zip | grep $TEIID_SHA \
     && unzip -q /tmp/server.zip -d $HOME && mv $HOME/teiid-* $JBOSS_HOME && rm /tmp/server.zip \ 
-    && chown -R 1000.0 $JBOSS_HOME \
+    && chown -R jboss:0 $JBOSS_HOME \
     && chmod -R g+rw $JBOSS_HOME \
     && find $JBOSS_HOME -type d -exec chmod g+x {} +
     
