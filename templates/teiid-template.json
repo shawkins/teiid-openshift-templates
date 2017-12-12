@@ -2,20 +2,20 @@
   "apiVersion": "v1",
   "kind": "Template",
   "labels": {
-    "template": "teiid-mongodb-template"
+    "template": "teiid-#name#-template"
   },
   "metadata": {
     "annotations": {
-      "description": "Teiid virtualization of MongoDB",
+      "description": "Teiid virtualization of #full-name#",
       "iconClass": "icon-teiid",
       "tags": "java,database,jboss",
-      "openshift.io/display-name": "Teiid MongoDB",
+      "openshift.io/display-name": "Teiid #full-name#",
       "openshift.io/documentation-url": "http://teiid.jboss.org/docs/",
-      "openshift.io/long-description": "This template provides a standalone Teiid server (a high performance, scalable, virtualization solution) providing access to MongoDB.",
+      "openshift.io/long-description": "This template provides a standalone Teiid server (a high performance, scalable, virtualization solution) providing access to #full-name#.",
       "openshift.io/provider-display-name": "Red Hat, Inc.",
       "openshift.io/support-url": "http://teiid.jboss.org/"
     },
-    "name": "teiid-mongodb"
+    "name": "teiid-#name#"
   },
   "objects": [
     {
@@ -53,7 +53,7 @@
         "annotations": {
           "template.openshift.io/expose-username": "{.data['application-user']}",
           "template.openshift.io/expose-password": "{.data['application-password']}",
-          "template.openshift.io/expose-database_name": "{.data['database-name']}"
+          "template.openshift.io/expose-database_name": "{.data['vdb-name']}"
         }
       },
       "stringData" : {
@@ -61,7 +61,7 @@
         "application-password": "${APPLICATION_PASSWORD}",
         "management-user": "${MANAGEMENT_USER}",
         "management-password": "${MANAGEMENT_PASSWORD}",
-        "database_name": "${DATABASE_NAME}"
+        "vdb_name": "${VDB_NAME}"
       }
     },
     {
@@ -277,7 +277,7 @@
                 "livenessProbe": {
                   "exec": {
                     "command": [
-                      "/usr/local/bin/is_running.sh", "${DATABASE_NAME}", "1.0.0"
+                      "/usr/local/bin/is_running.sh", "${VDB_NAME}", "1.0.0"
                     ]
                   },
                   "initialDelaySeconds": 10,
@@ -289,7 +289,7 @@
                 "readinessProbe": {
                   "exec": {
                     "command": [
-                      "/usr/local/bin/is_healthy.sh", "${DATABASE_NAME}", "1.0.0"
+                      "/usr/local/bin/is_healthy.sh", "${VDB_NAME}", "1.0.0"
                     ]
                   },
                   "initialDelaySeconds": 10,
@@ -398,12 +398,12 @@
       "displayName": "Application Name",
       "name": "APPLICATION_NAME",
       "required": true,
-      "value": "teiid-salesforce"
+      "value": "teiid-#name#"
     },
     {
       "description": "The name of the Virtual Database",
       "displayName": "Database Name",
-      "name": "DATABASE_NAME",
+      "name": "VDB_NAME",
       "required": true,
       "value": "vdb"
     },

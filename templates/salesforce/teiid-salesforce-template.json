@@ -53,7 +53,7 @@
         "annotations": {
           "template.openshift.io/expose-username": "{.data['application-user']}",
           "template.openshift.io/expose-password": "{.data['application-password']}",
-          "template.openshift.io/expose-database_name": "{.data['database-name']}"
+          "template.openshift.io/expose-database_name": "{.data['vdb-name']}"
         }
       },
       "stringData" : {
@@ -61,7 +61,7 @@
         "application-password": "${APPLICATION_PASSWORD}",
         "management-user": "${MANAGEMENT_USER}",
         "management-password": "${MANAGEMENT_PASSWORD}",
-        "database_name": "${DATABASE_NAME}",
+        "vdb_name": "${VDB_NAME}",
         "salesforce-user": "${SALESFORCE_USER}",
         "salesforce-password": "${SALESFORCE_PASSWORD}"
       }
@@ -297,7 +297,7 @@
                 "livenessProbe": {
                   "exec": {
                     "command": [
-                      "/usr/local/bin/is_running.sh", "${DATABASE_NAME}", "1.0.0"
+                      "/usr/local/bin/is_running.sh", "${VDB_NAME}", "1.0.0"
                     ]
                   },
                   "initialDelaySeconds": 10,
@@ -309,7 +309,7 @@
                 "readinessProbe": {
                   "exec": {
                     "command": [
-                      "/usr/local/bin/is_healthy.sh", "${DATABASE_NAME}", "1.0.0"
+                      "/usr/local/bin/is_healthy.sh", "${VDB_NAME}", "1.0.0"
                     ]
                   },
                   "initialDelaySeconds": 10,
@@ -423,7 +423,7 @@
     {
       "description": "The name of the Virtual Database",
       "displayName": "Database Name",
-      "name": "DATABASE_NAME",
+      "name": "VDB_NAME",
       "required": true,
       "value": "vdb"
     },

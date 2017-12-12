@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<vdb name='vdb' version='1.0.0'>
+    <model name='mysql'>
+        <source connection-jndi-name='java:/mysqlDS' name='mysql' translator-name='mysql5'/>
+    </model>
+</vdb>

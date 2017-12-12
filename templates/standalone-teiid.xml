@@ -130,6 +130,7 @@
                         <password>sa</password>
                     </security>
                 </datasource>
+                <!--datasource-xml-->
                 <drivers>
                     <driver name='h2' module='com.h2database.h2'>
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
@@ -143,9 +144,11 @@
                         <xa-datasource-class>org.teiid.jdbc.TeiidDataSource</xa-datasource-class>
                     </driver>
                     <driver name='mysql' module='com.mysql.jdbc'>
+                        <driver-class>com.mysql.jdbc.Driver</driver-class>
                         <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
                     </driver>
                     <driver name='postgresql' module='org.postgresql.jdbc'>
+                        <driver-class>org.postgresql.Driver</driver-class>
                         <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
                     </driver>
                 </drivers>
@@ -403,7 +406,7 @@
                 <resource-adapter id='infinispan'>
                     <module slot='main' id='org.jboss.teiid.resource-adapter.infinispan.hotrod'/>
                 </resource-adapter>
-                ${resource-adapter-xml}
+                <!--resource-adapter-xml-->
             </resource-adapters>
         </subsystem>
         <subsystem xmlns='urn:jboss:domain:request-controller:1.0'/>
