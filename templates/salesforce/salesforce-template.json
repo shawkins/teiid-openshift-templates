@@ -1,0 +1,73 @@
+{
+  "apiVersion": "v1",
+  "kind": "Template",
+  "labels": {
+    "template": "salesforce-service-template"
+  },
+  "metadata": {
+    "annotations": {
+      "description": "Salesforce Service",
+      "iconClass": "icon-teiid",
+      "tags": "salesforce",
+      "openshift.io/display-name": "Salesforce",
+      "openshift.io/documentation-url": "http://teiid.jboss.org/docs/",
+      "openshift.io/long-description": "This template provides access to Salesforce",
+      "openshift.io/provider-display-name": "Red Hat, Inc.",
+      "openshift.io/support-url": "http://teiid.jboss.org/"
+    },
+    "name": "salesforce-service"
+  },
+  "objects": [
+    {
+      "kind": "Secret",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "${APPLICATION_NAME}",
+        "annotations": {
+          "template.openshift.io/expose-username": "{.data['salesforce-user']}",
+          "template.openshift.io/expose-password": "{.data['salesforce-password']}"
+        }
+      },
+      "stringData" : {
+        "salesforce-user": "${SALESFORCE_USER}",
+        "salesforce-password": "${SALESFORCE_PASSWORD}"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "labels": {
+          "application": "${APPLICATION_NAME}"
+        },
+        "name": "${APPLICATION_NAME}"
+      },
+      "spec": {
+        "type": "ExternalName",
+        "externalName": "www.salesforce.com",
+        "selector": {}
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "description": "The name for the application.",
+      "displayName": "Application Name",
+      "name": "APPLICATION_NAME",
+      "required": true,
+      "value": "salesforce-service"
+    },
+    {
+      "description": "Username for accessing Salesforce",
+      "displayName": "Salesforce Username",
+      "name": "SALESFORCE_USER",
+      "required": true
+    },
+    {
+      "description": "Password for accessing Salesforce",
+      "displayName": "Salesforce Password",
+      "name": "SALESFORCE_PASSWORD",
+      "required": true
+    }
+  ]
+}
